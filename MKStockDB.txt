@@ -1,0 +1,304 @@
+create table category(cate_id int auto_increment primary key,cate_name varchar(50));
+
+create table unit(unit_id int auto_increment primary key,unit_name varchar(50));
+
+create table employees(emp_id varchar(10) primary key,emp_name varchar(50),emp_surname varchar(50),
+gender varchar(5),dob date,address varchar(100),tel varchar(30),email varchar(100),pass varchar(24),
+auther varchar(50),status int,img_path varchar(100),start date,end_ date);
+
+create table supplier(sup_id int auto_increment primary key,company varchar(100),tel varchar(30),fax varchar(30),
+address varchar(100),email varchar(100));
+
+create table products(pro_id varchar(18) primary key,pro_name varchar(100),price int,qtyalert int,cate_id int,unit_id int,img_path varchar(100),
+foreign key(cate_id) references category(cate_id),foreign key(unit_id) references unit(unit_id));
+
+create table stock(No_ int auto_increment primary key,pro_id varchar(18),serial varchar(18),qty int,
+note varchar(50),foreign key(pro_id) references products(pro_id));
+
+create table customers(cus_id int auto_increment primary key,company varchar(100),address varchar(100),tel varchar(30),fax varchar(30),email varchar(100),img_path varchar(100),end_promise date);
+
+create table orders(billno int primary key,emp_id varchar(10),sup_id int,amount int,dateorder date,
+timeorder time,status varchar(50),img_path varchar(100),foreign key(emp_id) references employees(emp_id),foreign key(sup_id) references supplier(sup_id));
+
+create table orderdetail(No_ int auto_increment primary key,pro_id varchar(18),qty int,billno int,
+foreign key(pro_id) references products(pro_id),foreign key(billno) references orders(billno));
+
+create table imports(No_ int auto_increment primary key,billimp varchar(10),billno int,sup_id int,
+emp_id varchar(10),pro_id varchar(18),serial varchar(18),qty int,price int,dateimp date,
+timeimp time,moreinfo varchar(100),rate_id varchar(5),rate int,foreign key(billno) references orders(billno), 
+foreign key(emp_id) references employees(emp_id),foreign key(sup_id) references supplier(sup_id),
+foreign key(pro_id) references products(pro_id));
+
+create table distribute(No_ int auto_increment primary key,datedis date,timedis time,emp_id varchar(10),pro_id varchar(18),serial varchar(18),qty int,cus_id int,note varchar(100),
+foreign key(emp_id) references employees(emp_id),foreign key(pro_id) references products(pro_id),
+foreign key(cus_id) references customers(cus_id));
+
+create table backdistribute(No_ int auto_increment primary key,dateback date,timeback time,emp_id varchar(10),
+cus_id int,pro_id varchar(18),serial varchar(18),qty int,note varchar(100),
+foreign key(emp_id) references employees(emp_id),foreign key(cus_id) references customers(cus_id),
+foreign key(pro_id) references products(pro_id));
+
+create table listorder(No_ int auto_increment primary key,pro_id varchar(18),qty int,bill int,
+foreign key(pro_id) references products(pro_id));
+
+create table listimp(No_ int auto_increment primary key,billimp varchar(10),billno int,sup_id int,
+emp_id varchar(10),pro_id varchar(18),serial varchar(18),qty int,price int,dateimp date,
+timeimp time,moreinfo varchar(100),foreign key(billno) references orders(billno),rate_id varchar(5),
+rate int,acc_id varchar(10),unit_id int,ppy_id int,po_id int,
+foreign key(emp_id) references employees(emp_id),foreign key(sup_id) references supplier(sup_id),
+foreign key(pro_id) references products(pro_id),
+foreign key(rate_id) references rate(rate_id),foreign key(acc_id) references acc_no(acc_id),
+foreign key(unit_id) references acc_unit(unit_id),foreign key(ppy_id) references acc_property(ppy_id));
+
+
+create view ckeckorder_view as
+select p.pro_id,pro_name,cate_name,sum(qty) as qty,unit_name,qtyalert,img_path from products p join category c 
+on p.cate_id=c.cate_id join unit u on p.unit_id=u.unit_id join stock s on p.pro_id=s.pro_id group by s.pro_id;
+
+create table Claim(No_ int auto_increment primary key,dateclaim date,timeclaim time,emp_id varchar(10),
+sup_id int,pro_id varchar(18),serial varchar(18),qty int,note varchar(100),status varchar(50),
+foreign key(emp_id) references employees(emp_id),foreign key(sup_id) references supplier(sup_id),
+foreign key(pro_id) references products(pro_id));
+
+HR
+
+create table department(dept_id int auto_increment primary key,dept_name varchar(50));
+
+create table auther(auther_id int auto_increment primary key,auther_name varchar(50),dept_id int,foreign key(dept_id) references department(dept_id));
+
+create table applyemp(app_id int auto_increment primary key,app_name varchar(50),app_surname varchar(50),gender varchar(5),dob date,address varchar(100),
+tel varchar(30),email varchar(100),auther_id int,school varchar(100),salary varchar(50),experience varchar(100),can_start date,foreign key(auther_id) references auther(auther_id));
+
+create table chsalary(sry_id int auto_increment primary key,emp_id varchar(10),old_salary int,new_salary int,date_ch date,foreign key(emp_id) references employees(emp_id));
+
+
+ACCOUNTING
+
+create table acc_no(acc_id varchar(10) primary key,acc_name varchar(100));
+create table acc_unit(unit_id int auto_increment primary key,unit_name varchar(100));
+create table acc_property(ppy_id int auto_increment primary key,ppy_name varchar(100));
+create table rate(rate_id varchar(5) primary key,rate_buy int,rate_sell int);
+create table acc_product(pro_id int auto_increment primary key,pro_name varchar(100),price int);
+create table po(po_id int primary key,emp_id varchar(10),kip_amount int,baht_amount int,us_amount int,po_date date,po_time time,status varchar(50),
+foreign key(emp_id) references employees(emp_id));
+
+create table podetail(pdet_id int auto_increment primary key,bill varchar(10),po_date date,pdet_name varchar(100),qty int,price int,acc_id varchar(10),
+unit_id int,ppy_id int,po_id int,rate_id varchar(5),rate int,img_path varchar(100),
+foreign key(acc_id) references acc_no(acc_id),
+foreign key(unit_id) references acc_unit(unit_id),
+foreign key(ppy_id) references acc_property(ppy_id),
+foreign key(rate_id) references rate(rate_id),
+foreign key(po_id) references po(po_id));
+
+
+create table purchase_order(purchase_id int primary key,emp_id varchar(10),amount int,po_date date,
+foreign key(emp_id) references employees(emp_id));
+
+create table purchasedetail(pdet_id int auto_increment primary key,pdet_name varchar(100),qty int,price int,purchase_id int,
+foreign key(purchase_id) references purchase_order(purchase_id));
+
+create table listpurchasedetail(pdet_id int auto_increment primary key,pdet_name varchar(100),qty int,price int,purchase_id int);
+
+
+create table invoice(voice_id int primary key,emp_id varchar(10),amount int,in_date date,in_time time,cus_id int,img_path varchar(100),
+foreign key(emp_id) references employees(emp_id),
+foreign key(cus_id) references customers(cus_id));
+
+create table invoicedetail(indet_id int auto_increment primary key,pro_id int,qty int,price decimal(11,2),vat decimal(11,2),voice_id int,
+rate_id varchar(5),note varchar(100),ppy_id int,acc_id varchar(10),unit_id int,
+foreign key(pro_id) references acc_product(pro_id),foreign key(voice_id) references invoice(voice_id),
+foreign key(rate_id) references rate(rate_id),foreign key(acc_id) references acc_no(acc_id),
+foreign key(unit_id) references acc_unit(unit_id));
+
+
+create table listinvoicedetail(indet_id int auto_increment primary key,pro_id int,qty int,price decimal(11,2),vat decimal(11,2),voice_id int,
+rate_id varchar(5),note varchar(100),ppy_id int,acc_id varchar(10),unit_id int,
+foreign key(pro_id) references acc_product(pro_id),foreign key(rate_id) references rate(rate_id),
+foreign key(acc_id) references acc_no(acc_id),
+foreign key(unit_id) references acc_unit(unit_id));
+
+create table quotation(quo_id int primary key,emp_id varchar(10),amount int,in_date date,in_time time,cus_id int,img_path varchar(100),
+foreign key(emp_id) references employees(emp_id),
+foreign key(cus_id) references customers(cus_id));
+
+create table quotationdetail(quodet_id int auto_increment primary key,pro_id int,qty int,price decimal(11,2),vat decimal(11,2),quo_id int,
+rate_id varchar(5),note varchar(100),ppy_id int,acc_id varchar(10),unit_id int,
+foreign key(pro_id) references acc_product(pro_id),foreign key(quo_id) references quotation(quo_id),
+foreign key(rate_id) references rate(rate_id),foreign key(acc_id) references acc_no(acc_id),
+foreign key(unit_id) references acc_unit(unit_id),foreign key(ppy_id) references acc_property(ppy_id));
+
+create table listquotationdetail(quodet_id int auto_increment primary key,pro_id int,qty int,price decimal(11,2),vat decimal(11,2),quo_id int,
+rate_id varchar(5),note varchar(100),ppy_id int,acc_id varchar(10),unit_id int,
+foreign key(pro_id) references acc_product(pro_id),
+foreign key(rate_id) references rate(rate_id),foreign key(acc_id) references acc_no(acc_id),
+foreign key(unit_id) references acc_unit(unit_id),foreign key(ppy_id) references acc_property(ppy_id));
+
+create table invoice2(voice_id int primary key,emp_id varchar(10),amount int,in_date date,in_time time,cus_id int,img_path varchar(100),
+foreign key(emp_id) references employees(emp_id),
+foreign key(cus_id) references customers(cus_id));
+
+create table invoicedetail2(indet_id int auto_increment primary key,pro_id varchar(18),qty int,price int,note varchar(100),voice_id int,
+foreign key(pro_id) references products(pro_id),foreign key(voice_id) references invoice2(voice_id));
+
+create table listinvoicedetail2(indet_id int auto_increment primary key,pro_id varchar(18),qty int,price int,note varchar(100),voice_id int,
+foreign key(pro_id) references products(pro_id));
+
+create table quotation2(quo_id int primary key,emp_id varchar(10),amount int,in_date date,in_time time,cus_id int,img_path varchar(100),
+foreign key(emp_id) references employees(emp_id),
+foreign key(cus_id) references customers(cus_id));
+
+create table quotationdetail2(quodet_id int auto_increment primary key,pro_id varchar(18),qty int,price int,note varchar(100),quo_id int,
+acc_id varchar(10),unit_id int,ppy_id int,
+foreign key(pro_id) references products(pro_id),foreign key(quo_id) references quotation2(quo_id),
+foreign key(acc_id) references acc_no(acc_id),foreign key(ppy_id) references acc_property(ppy_id),
+foreign key(unit_id) references acc_unit(unit_id));
+
+create table listquotationdetail2(quodet_id int auto_increment primary key,pro_id varchar(18),qty int,price int,note varchar(100),quo_id int,
+acc_id varchar(10),unit_id int,ppy_id int,
+foreign key(pro_id) references products(pro_id),
+foreign key(acc_id) references acc_no(acc_id),foreign key(ppy_id) references acc_property(ppy_id),
+foreign key(unit_id) references acc_unit(unit_id));
+
+
+
+
+create table receipt(re_id int primary key,emp_id varchar(10),voice_id int,cus_id int,re_date date,kip_amount int,baht_amount int,us_amount int,img_path varchar(100),
+foreign key(emp_id) references employees(emp_id),foreign key(voice_id) references invoice(voice_id),
+foreign key(cus_id) references customers(cus_id));
+
+create table receiptdetail(redt_id int auto_increment primary key,pro_id int,qty int,price int,re_id int,unit_id int,acc_id varchar(10),ppy_id int,rate_id varchar(5),
+rate int,foreign key(pro_id) references acc_product(pro_id),foreign key(re_id) references receipt(re_id),foreign key(unit_id) references acc_unit(unit_id),
+foreign key(acc_id) references acc_no(acc_id),foreign key(ppy_id) references acc_property(ppy_id),foreign key(rate_id) references rate(rate_id));
+
+create table cash_receipt(cash_id int auto_increment primary key,re_id int,cash_name varchar(100),qty int,price decimal(11,2),vat decimal(11,2),cash_date date,bill varchar(50),unit_id int,
+acc_id varchar(10),ppy_id int,rate_id varchar(5),rate int,img_path varchar(100),
+foreign key(re_id) references receipt(re_id),foreign key(unit_id) references acc_unit(unit_id),foreign key(acc_id) references acc_no(acc_id),
+foreign key(ppy_id) references acc_property(ppy_id),foreign key(rate_id) references rate(rate_id));
+
+
+create table listcash_receipt(cash_id int auto_increment primary key,re_id int,cash_name varchar(100),qty int,price decimal(11,2),vat decimal(11,2),cash_date date,bill varchar(50),unit_id int,
+acc_id varchar(10),ppy_id int,rate_id varchar(5),rate int,img_path varchar(100),note varchar(100),
+foreign key(unit_id) references acc_unit(unit_id),foreign key(acc_id) references acc_no(acc_id),
+foreign key(ppy_id) references acc_property(ppy_id));
+
+create table salary(sry_id int primary key,emp_id varchar(10),amount int,sal_date date,sal_mon varchar(10),img_path varchar(100),status varchar(50),
+foreign key(emp_id) references employees(emp_id));
+
+create table salarydetail(sdet_id int auto_increment primary key,sry_id int,emp_id varchar(10),qty int,salary decimal(11,2),ot decimal(11,2),eat decimal(11,2),
+oil decimal(11,2),mobile decimal(11,2),missday int,miss decimal(11,2),
+more decimal(11,2),unit_id int,acc_id varchar(10),ppy_id int,
+foreign key(sry_id) references salary(sry_id),foreign key(emp_id) references employees(emp_id),foreign key(acc_id) references acc_no(acc_id),
+foreign key(unit_id) references acc_unit(unit_id),foreign key(ppy_id) references acc_property(ppy_id));
+
+create table listsalarydetail(sdet_id int auto_increment primary key,sry_id int,emp_id varchar(10),qty int,salary decimal(11,2),ot decimal(11,2),eat decimal(11,2),
+oil decimal(11,2),mobile decimal(11,2),missday int,miss decimal(11,2),
+more decimal(11,2),unit_id int,acc_id varchar(10),ppy_id int,
+foreign key(emp_id) references employees(emp_id),foreign key(acc_id) references acc_no(acc_id),
+foreign key(unit_id) references acc_unit(unit_id),foreign key(ppy_id) references acc_property(ppy_id));
+
+create table service(service_id int auto_increment primary key,service_name varchar(100));
+
+create table productdetail(prod_id int auto_increment primary key,pro_id varchar(18),component varchar(100),description varchar(100),
+foreign key(pro_id) references products(pro_id));
+
+
+create table listpodetail(no_ int auto_increment primary key,bill varchar(10),po_date date,pdet_name varchar(100),qty int,price int,note varchar(50),acc_id varchar(10),po_id int,purchase_id int,rate_id varchar(5),rate int,img_path varchar(100),
+foreign key(acc_id) references acc_no(acc_id),
+foreign key(rate_id) references rate(rate_id));
+
+create view listpodetail_view as select no_,bill,purchase_id,po_date,pdet_name,qty,price,qty*price as total,acc_name,img_path,rate_id,note from listpodetail d join acc_no n on d.acc_id=n.acc_id;  
+
+create table listinvoicedetail(indet_id int auto_increment primary key,pro_id int,qty int,price decimal(11,2),voice_id int,
+foreign key(pro_id) references acc_product(pro_id));
+
+create table ot(ot_id int auto_increment primary key,emp_id varchar(10),date_ot date,time_start time,time_end time,
+ot_type varchar(50),amount decimal(11,2),foreign key(emp_id) references employees(emp_id));
+
+
+create table listot(ot_id int auto_increment primary key,emp_id varchar(10),date_ot date,time_start time,time_end time,
+ot_type varchar(50),amount decimal(11,2),foreign key(emp_id) references employees(emp_id));
+
+create table emp_skill(skill_id int auto_increment primary key,emp_id varchar(10),course_name varchar(100),
+course_start date,course_end date,certificate varchar(100),foreign key(emp_id) references employees(emp_id));
+
+create table yearly(id int auto_increment primary key,po_price decimal(20,2),re_price decimal(20,2),acc_id varchar(10),
+unit_id int,ppy_id int,year_date date,foreign key(acc_id) references acc_no(acc_id),foreign key(unit_id) references acc_unit(unit_id),
+foreign key(ppy_id) references acc_property(ppy_id));
+
+create table listyearly(id int auto_increment primary key,po_price decimal(20,2),re_price decimal(20,2),acc_id varchar(10),
+unit_id int,ppy_id int,year_date date,foreign key(acc_id) references acc_no(acc_id),foreign key(unit_id) references acc_unit(unit_id),
+foreign key(ppy_id) references acc_property(ppy_id));
+
+create table yearly_po_cr(id int auto_increment primary key,po_price decimal(20,2),re_price decimal(20,2),acc_id varchar(10),year_date date,
+foreign key(acc_id) references acc_no(acc_id));
+
+create table listyearly_po_cr(id int auto_increment primary key,po_price decimal(20,2),re_price decimal(20,2),acc_id varchar(10),year_date date,
+foreign key(acc_id) references acc_no(acc_id));
+
+select a.acc_id,acc_name,sum(po_price) as po_price,sum(re_price) as re_price,sum(p.qty*(p.price*p.rate)) as po_total,sum(c.qty*(c.price*c.rate)) as re_total,(sum(po_price) - sum(re_price)) as last_year,sum(p.qty*(p.price*p.rate)) - sum(c.qty*(c.price*c.rate)) as sum_this_year
+from acc_no a left join yearly y on a.acc_id=y.acc_id left join podetail p on a.acc_id=p.acc_id left join cash_receipt c on a.acc_id=c.acc_id where po_price != '' or re_price != '' or p.price != '' or c.price !='' group by a.acc_id order by a.acc_id asc;
+
+create view yearly_view as 
+select a.acc_id,acc_name,po_price,re_price,sum(p.qty*(p.price*p.rate)) as po_total,sum(c.qty*(c.price*c.rate)) as re_total,sum(vat) as vat,i.re_date,o.po_date,year_date
+from acc_no a left join yearly y on a.acc_id=y.acc_id left join podetail p on a.acc_id=p.acc_id left join cash_receipt c on a.acc_id=c.acc_id left join receipt i on 
+c.re_id=i.re_id left join po o on p.po_id=o.po_id left join acc_unit u on a.unit_id=u.unit_id left join acc_property t on u.ppy_id=t.ppy_id group by a.acc_id order by a.acc_id;
+
+
+create view yearly2_view as 
+select a.acc_id,acc_name,po_price,re_price,sum(p.qty*(p.price*p.rate)) as po_total,sum(c.qty*(c.price*c.rate)) as re_total,sum(vat) as vat,i.re_date,o.po_date,year_date
+from acc_no a left join yearly y on a.acc_id=y.acc_id left join podetail p on a.acc_id=p.acc_id left join cash_receipt c on a.acc_id=c.acc_id left join receipt i on 
+c.re_id=i.re_id left join po o on p.po_id=o.po_id left join acc_unit u on a.unit_id=u.unit_id left join acc_property t on u.ppy_id=t.ppy_id where ppy_name='ລາຍຈ່າຍ' or ppy_name='ລາຍຮັບ' group by a.acc_id order by a.acc_id;
+
+
+
+
+
+create view yearly_revenue_view as 
+select u.unit_id,unit_name,sum(po_price) as po_price,sum(re_price) re_price,sum(p.qty*(p.price*p.rate)) as po_total,sum(c.qty*(c.price*c.rate)) as re_total,sum(vat) as vat,i.re_date,o.po_date,year_date
+from acc_unit u left join acc_property t on u.ppy_id=t.ppy_id left join acc_no a on u.unit_id=a.unit_id left join yearly_po_cr y on a.acc_id=y.acc_id left join podetail p on a.acc_id=p.acc_id left join cash_receipt c on a.acc_id=c.acc_id left join receipt i on 
+c.re_id=i.re_id left join po o on p.po_id=o.po_id where ppy_name='ລາຍຮັບ' group by u.unit_id order by a.acc_id asc;
+
+
+create view yearly_po_view as 
+select u.unit_id,unit_name,sum(po_price) as po_price,sum(re_price) as re_price,sum(p.qty*(p.price*p.rate)) as po_total,sum(c.qty*(c.price*c.rate)) as re_total,sum(vat) as vat,i.re_date,o.po_date,y.year_date
+from acc_unit u left join acc_property t on u.ppy_id=t.ppy_id left join acc_no a on u.unit_id=a.unit_id left join yearly_po_cr y on a.acc_id=y.acc_id left join podetail p on a.acc_id=p.acc_id left join cash_receipt c on a.acc_id=c.acc_id left join receipt i on 
+c.re_id=i.re_id left join po o on p.po_id=o.po_id where ppy_name='ລາຍຈ່າຍ' group by u.unit_id order by a.acc_id asc;
+
+
+
+
+create view yearly_revenuedetail_view as 
+select a.acc_id,acc_name,a.unit_id,unit_name,po_price,re_price,sum(p.qty*(p.price*p.rate)) as po_total,sum(c.qty*(c.price*c.rate)) as re_total,sum(vat) as vat,i.re_date,o.po_date,year_date
+from acc_no a left join yearly_po_cr y on a.acc_id=y.acc_id left join podetail p on a.acc_id=p.acc_id left join cash_receipt c on a.acc_id=c.acc_id left join receipt i on 
+c.re_id=i.re_id left join po o on p.po_id=o.po_id left join acc_unit u on a.unit_id=u.unit_id left join acc_property t on u.ppy_id=t.ppy_id where ppy_name='ລາຍຮັບ' group by a.unit_id order by unit_name asc;
+
+
+create view yearly_revenuedetail_view as 
+select a.acc_id,acc_name,a.unit_id,unit_name,po_price,re_price,sum(p.qty*(p.price*p.rate)) as po_total,sum(c.qty*(c.price*c.rate)) as re_total,sum(vat) as vat,i.re_date,o.po_date,year_date
+from acc_no a left join yearly_po_cr y on a.acc_id=y.acc_id left join podetail p on a.acc_id=p.acc_id left join cash_receipt c on a.acc_id=c.acc_id left join receipt i on 
+c.re_id=i.re_id left join po o on p.po_id=o.po_id left join acc_unit u on a.unit_id=u.unit_id left join acc_property t on u.ppy_id=t.ppy_id where ppy_name='ລາຍຮັບ' group by a.acc_id order by a.acc_id asc;
+
+
+create view yearly_podetail_view as 
+select a.acc_id,acc_name,a.unit_id,unit_name,po_price,re_price,sum(p.qty*(p.price*p.rate)) as po_total,sum(c.qty*(c.price*c.rate)) as re_total,vat as vat,o.po_date,year_date
+from acc_no a left join yearly_po_cr y on a.acc_id=y.acc_id left join podetail p on a.acc_id=p.acc_id left join cash_receipt c on a.acc_id=c.acc_id left join receipt i on 
+c.re_id=i.re_id left join po o on p.po_id=o.po_id left join acc_unit u on a.unit_id=u.unit_id left join acc_property t on u.ppy_id=t.ppy_id where ppy_name='ລາຍຈ່າຍ' group by a.acc_id order by a.acc_id asc;
+
+
+
+create view yearly_revenue_view as 
+select a.acc_id,acc_name,a.unit_id,unit_name,po_price,re_price,sum(p.qty*(p.price*p.rate)) as po_total,sum(c.qty*(c.price*c.rate)) as re_total,sum(vat) as vat,i.re_date,o.po_date,year_date
+from acc_no a left join yearly_po_cr y on a.acc_id=y.acc_id left join podetail p on a.acc_id=p.acc_id left join cash_receipt c on a.acc_id=c.acc_id left join receipt i on 
+c.re_id=i.re_id left join po o on p.po_id=o.po_id left join acc_unit u on a.unit_id=u.unit_id left join acc_property t on u.ppy_id=t.ppy_id where ppy_name='ລາຍຮັບ' group by a.acc_id order by a.acc_id;
+
+
+select a.acc_id,acc_name,po_price,re_price,sum(p.qty*(p.price*p.rate)) as po_total,sum(c.qty*(c.price*c.rate)) as re_total,sum(vat) as vat,i.re_date,o.po_date,year_date
+from acc_no a left join yearly y on a.acc_id=y.acc_id left join podetail p on a.acc_id=p.acc_id left join cash_receipt c on a.acc_id=c.acc_id left join receipt i on 
+c.re_id=i.re_id left join po o on p.po_id=o.po_id left join acc_unit u on a.unit_id=u.unit_id left join acc_property t on u.ppy_id=t.ppy_id where ppy_name='ຊັບສິນຄົງທີ່' group by a.acc_id order by a.acc_id;
+
+
+
+
+select u.unit_id,unit_name,sum(po_price) as po_price,sum(re_price) as re_price,sum(p.qty*(p.price*p.rate)) as po_total,sum(c.qty*(c.price*c.rate)) as re_total,sum(vat) as vat,i.re_date,o.po_date,y.year_date
+from acc_unit u left join acc_property t on u.ppy_id=t.ppy_id left join acc_no a on u.unit_id=a.unit_id left join yearly y on a.acc_id=y.acc_id left join podetail p on a.acc_id=p.acc_id left join cash_receipt c on a.acc_id=c.acc_id left join receipt i on 
+c.re_id=i.re_id left join po o on p.po_id=o.po_id where ppy_name='ຊັບສິນຄົງທີ່' group by u.unit_id order by u.ppy_id asc;
