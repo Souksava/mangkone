@@ -107,18 +107,6 @@
                 echo"</script>";
             }
             else{
-                $sqlckpro = "select * from stock where pro_id='$pro_id';";
-                $resultpro = mysqli_query($link,$sqlckpro);
-                $rowpro = mysqli_fetch_array($resultpro, MYSQLI_ASSOC);
-                $stokcqty = $rowpro['qty'];
-              if(mysqli_num_rows($resultpro) == 0){
-                echo"<script>";
-                echo"alert('ລະຫັດສິນຄ້າ ບໍ່ຖືກຕ້ອງ');";
-                echo"window.location.href='quotation_pro_baht.php';";
-                echo"</script>";
-              }
-              else{
-                    
                     $sqlck2 = "select * from listquotationdetail2 where rate_id='LAK' or rate_id='USD';";
                     $resultck2 = mysqli_query($link,$sqlck2);
                     $sqlckqty = "select * from listquotationdetail2 where pro_id = '$pro_id';";
@@ -147,7 +135,6 @@
                         $sqladd = "insert into listquotationdetail2(pro_id,qty,price,vat,quo_id,rate_id,note,acc_id) values('$pro_id','$qty','$price','$vat','$quo_id','THB','$note','71410000');";
                         $resultadd = mysqli_query($link,$sqladd);
                     }
-              }
             }
         }
     ?>

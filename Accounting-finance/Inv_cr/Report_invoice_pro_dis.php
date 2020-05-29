@@ -11,7 +11,7 @@ function ShowData(){
     $date1 = $_POST['date1'];
     $voice_id2 = $_POST['voice_id'];
     $rate2 = $_POST['rate'];
-    $sql = "select d.pro_id,pro_name,sum(d.qty) as qty,d.price,sum(d.qty)*d.price as total from invoicedetail2 d left join products p on d.pro_id=p.pro_id where d.voice_id='$voice_id2' group by d.pro_id;";
+    $sql = "select d.pro_id,pro_name,sum(d.qty) as qty,d.price,sum(d.qty)*d.price as total,note,cate_name from invoicedetail2 d left join products p on d.pro_id=p.pro_id left join category c on p.cate_id=c.cate_id where d.voice_id='$voice_id2' group by d.pro_id;";
     $result = mysqli_query($link,$sql);
     while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)){
         $Bill = $Bill + 1 ;
@@ -19,11 +19,12 @@ function ShowData(){
             <tr align="center">
                 <td align="center">'.$Bill.'</td>
                 <td align="center">'.$row["pro_id"].'</td>
-                <td align="center">'.$row["pro_name"].'</td>
+                <td align="center">'.$row["cate_name"].' '.$row["pro_name"].'</td>
                 <td align="center">'.$row["qty"].'</td>
 
                 <td align="center"> '.$rate2.' '.number_format($row["price"],2).'</td>
                 <td align="center"> '.$rate2.' '.number_format($row["total"],2).' </td>
+                <td align="center">'.$row["note"].' </td>
                
             </tr>
         
@@ -39,23 +40,23 @@ function ShowData(){
         $discount = $rowsum['newamount'] - ($kip_amount + $baht_amount + $us_amount);
     $output .='
                 <tr >
-                    <td colspan="3" align="right"><h4><b>Amount ('.$rate2.') </b></h4></td>
+                    <td colspan="4" align="right"><h4><b>Amount ('.$rate2.') </b></h4></td>
                     <td colspan="3" align="right"><h4><b>'.$rate2.' '.number_format($rowsum["amount"],2).'</h4> </b></td>
                 </tr>    
                 <tr class="fontblack18">
-                    <td colspan="3" align="right"><h4><b>VAT 10% ('.$rate2.') </b></h4></td>
+                    <td colspan="4" align="right"><h4><b>VAT 10% ('.$rate2.') </b></h4></td>
                     <td colspan="3" align="right"><h4><b>'.$rate2.' '.number_format($rowsum["vat"],2).'</h4> </b></td>
                 </tr>    
                 <tr class="fontblack18">
-                    <td colspan="3" align="right"><h4><b>Amount ('.$rate2.') </b></h4></td>
+                    <td colspan="4" align="right"><h4><b>Amount ('.$rate2.') </b></h4></td>
                     <td colspan="3" align="right"><h4><b>'.$rate2.' '.number_format($rowsum["newamount"],2).'</h4> </b></td>
                 </tr> 
                 <tr class="fontblack18">
-                    <td colspan="3" align="right"><h4><b>Special Discount ('.$rate2.') </b></h4></td>
+                    <td colspan="4" align="right"><h4><b>Special Discount ('.$rate2.') </b></h4></td>
                     <td colspan="3" align="right"><h4><b>('.$rate2.' '.number_format($discount,2).')</h4> </b></td>
                 </tr>  
                 <tr class="fontblack18">
-                    <td colspan="3" align="right"><h4><b>Total Amount ('.$rate2.') </b></h4></td>
+                    <td colspan="4" align="right"><h4><b>Total Amount ('.$rate2.') </b></h4></td>
                     <td colspan="3" align="right"><h4><b>'.$rate2.' '.number_format($rowsum["newamount"] - $discount,2).'</h4> </b></td>
                 </tr>    
             ';
@@ -166,10 +167,11 @@ $content = '
                 <tr align="center" style="background-color: #dbdbd8">
                      <th>#</th>
                      <th>Barcode</th>
-                    <th style="width: 300px;">Equipment List</th>
+                    <th style="width: 250px;">Equipment List</th>
                     <th>Qty</th>
                     <th>Price ('.$rate1.')</th>
                     <th>Amount ('.$rate1.')</th>
+                    <th style="width: 100px;">Remark</th>
                 </tr>
                 '.ShowData().'
                 </table><br>

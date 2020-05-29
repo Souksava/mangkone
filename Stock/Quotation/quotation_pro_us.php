@@ -107,48 +107,35 @@
                 echo"</script>";
             }
             else{
-                $sqlckpro = "select * from stock where pro_id='$pro_id';";
-                $resultpro = mysqli_query($link,$sqlckpro);
-                $rowpro = mysqli_fetch_array($resultpro, MYSQLI_ASSOC);
-                $stokcqty = $rowpro['qty'];
-              if(mysqli_num_rows($resultpro) == 0){
-                echo"<script>";
-                echo"alert('ລະຫັດສິນຄ້າບໍ່ຖືກຕ້ອງ');";
-                echo"window.location.href='quotation_pro_us.php';";
-                echo"</script>";
-              }
-              else{
-                    
                     $sqlck2 = "select * from listquotationdetail2 where rate_id='LAK' or rate_id='THB';";
                     $resultck2 = mysqli_query($link,$sqlck2);
                     $sqlckqty = "select * from listquotationdetail2 where pro_id = '$pro_id';";
                     $resultqty = mysqli_query($link,$sqlckqty);
-                if(mysqli_num_rows($resultck2) > 0){
-                    echo"<script>";
-                    echo"alert('ກະລຸນາລໍຖ້າ ເນື່ອງຈາກໃນຂະນະນີ້ມີຜູ້ໃຊ້ລະບົບກຳລັງເຮັດໃບ Quotation ໃນສະກຸນເງິນບາດ ຫຼື ກີບ');";
-                    echo"window.location.href='quotation_pro_us.php';";
-                    echo"</script>";
-                }
-                elseif(mysqli_num_rows($resultqty) > 0){
-                        $sqlupdate = "update listquotationdetail2 set qty=qty+'$qty' where pro_id='$pro_id';";
-                        $resultupdate = mysqli_query($link,$sqlupdate);
-                        $sqlupdatevat = "select (qty*price)*0.10 as vat from listquotationdetail2 where pro_id='$pro_id';";
-                        $resultupdatevat = mysqli_query($link,$sqlupdatevat);
-                        $rowvat = mysqli_fetch_array($resultupdatevat,MYSQLI_ASSOC);
-                        $newvat = $rowvat['vat'];
-                        $sqlupdatevate2 = "update listquotationdetail2 set vat='$newvat' where pro_id='$pro_id';";
-                        $resultupdatevat2 = mysqli_query($link,$sqlupdatevate2); 
+                    if(mysqli_num_rows($resultck2) > 0){
                         echo"<script>";
+                        echo"alert('ກະລຸນາລໍຖ້າ ເນື່ອງຈາກໃນຂະນະນີ້ມີຜູ້ໃຊ້ລະບົບກຳລັງເຮັດໃບ Quotation ໃນສະກຸນເງິນບາດ ຫຼື ກີບ');";
                         echo"window.location.href='quotation_pro_us.php';";
                         echo"</script>";
                     }
-                else {
-                        $vat = ($price * $qty) * 0.10;
-                        $sqladd = "insert into listquotationdetail2(pro_id,qty,price,vat,quo_id,rate_id,note,acc_id) values('$pro_id','$qty','$price','$vat','$quo_id','USD','$note','71410000');";
-                        $resultadd = mysqli_query($link,$sqladd);
-                    }
-              }
-            }
+                    elseif(mysqli_num_rows($resultqty) > 0){
+                            $sqlupdate = "update listquotationdetail2 set qty=qty+'$qty' where pro_id='$pro_id';";
+                            $resultupdate = mysqli_query($link,$sqlupdate);
+                            $sqlupdatevat = "select (qty*price)*0.10 as vat from listquotationdetail2 where pro_id='$pro_id';";
+                            $resultupdatevat = mysqli_query($link,$sqlupdatevat);
+                            $rowvat = mysqli_fetch_array($resultupdatevat,MYSQLI_ASSOC);
+                            $newvat = $rowvat['vat'];
+                            $sqlupdatevate2 = "update listquotationdetail2 set vat='$newvat' where pro_id='$pro_id';";
+                            $resultupdatevat2 = mysqli_query($link,$sqlupdatevate2); 
+                            echo"<script>";
+                            echo"window.location.href='quotation_pro_us.php';";
+                            echo"</script>";
+                        }
+                    else {
+                            $vat = ($price * $qty) * 0.10;
+                            $sqladd = "insert into listquotationdetail2(pro_id,qty,price,vat,quo_id,rate_id,note,acc_id) values('$pro_id','$qty','$price','$vat','$quo_id','USD','$note','71410000');";
+                            $resultadd = mysqli_query($link,$sqladd);
+                        }
+                }
         }
     ?>
     <div class="container font14">
